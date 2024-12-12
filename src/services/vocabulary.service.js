@@ -10,6 +10,12 @@ exports.getVocabularyById = async (vocabularyId) => {
     return vocabulary;
 }
 
+exports.getVocabulariesByLessonNumberService = async (lessonNumber) => {
+    const vocabularies = await Vocabulary.find({ lessonNumber });
+    return vocabularies;
+}
+
+
 exports.getVocabulariesService = async () => {
     const vocabularies = await Vocabulary.find({});
     return vocabularies;

@@ -17,18 +17,6 @@ exports.getLessonsService = async () => {
     return lessons;
 }
 
-exports.getLessonsWithVocabularyCountService = async () => {
-    const lessons = await Lesson.find().lean();
-
-    const lessonsWithCounts = await Promise.all(
-        lessons.map(async (lesson) => {
-            const vocabCount = await Vocabulary.countDocuments({ lessonNumber: lesson.lessonNumber });
-            return { ...lesson, vocabCount };
-        })
-    );
-    return lessonsWithCounts;
-};
-
 exports.updateLessonService = async (id, updateData) => {
     const updatedLesson = await Lesson.findByIdAndUpdate(id, updateData, { new: true });
     return updatedLesson;

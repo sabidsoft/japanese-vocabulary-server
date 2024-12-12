@@ -1,10 +1,13 @@
 const Vocabulary = require("../models/Vocabulary");
+const createError = require("http-errors");
+const { successResponse } = require("../utils/response");
 const {
     getVocabulariesService,
     createVocabularyService,
     getVocabularyById,
     updateVocabularyService,
-    deleteVocabularyService
+    deleteVocabularyService,
+    getVocabulariesByLessonNumberService
 } = require("../services/vocabulary.service");
 
 exports.createVocabulary = async (req, res, next) => {
@@ -55,6 +58,21 @@ exports.createVocabulary = async (req, res, next) => {
 exports.getVocabularies = async (req, res, next) => {
     try {
         const vocabularies = await getVocabulariesService();
+
+        // Send successfull response
+        successResponse(res, {
+            status: 200,
+            message: "Vocabularies fetched successfully!",
+            payload: { vocabularies },
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.getVocabulariesByLessonNumber = async (req, res, next) => {
+    try {
+        const vocabularies = await getVocabulariesByLessonNumberService(req.params.lessonNumber);
 
         // Send successfull response
         successResponse(res, {

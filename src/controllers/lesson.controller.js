@@ -3,11 +3,10 @@ const { successResponse } = require("../utils/response");
 const Lesson = require("../models/Lesson");
 const {
     createLessonService,
-    getLessonsService,
-    getLessonsWithVocabularyCountService,
     updateLessonService,
     getLessonById,
-    deleteLessonService
+    deleteLessonService,
+    getLessonsService
 } = require("../services/lesson.service");
 
 exports.createLesson = async (req, res, next) => {
@@ -54,31 +53,15 @@ exports.createLesson = async (req, res, next) => {
     }
 };
 
-
 exports.getLessons = async (req, res, next) => {
     try {
         const lessons = await getLessonsService();
 
-        // Send successfull response
+        // Send successful response
         successResponse(res, {
             status: 200,
             message: "Lessons fetched successfully!",
             payload: { lessons },
-        });
-    } catch (err) {
-        next(err);
-    }
-};
-
-exports.getLessonsWithVocabularyCount = async (req, res, next) => {
-    try {
-        const lessonsWithCounts = await getLessonsWithVocabularyCountService();
-
-        // Send successfull response
-        successResponse(res, {
-            status: 200,
-            message: "Lessons fetched successfully!",
-            payload: { lessonsWithCounts },
         });
     } catch (err) {
         next(err);
