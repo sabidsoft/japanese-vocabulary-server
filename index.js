@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // router level middlewares
 app.use('/api/users', userRouter);
-app.use('/api/users/admin/lessons', lessonRouter);
+app.use('/api/lessons', lessonRouter);
 
 // home route
 app.get('/', (req, res) => {
