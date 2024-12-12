@@ -8,6 +8,7 @@ const createError = require('http-errors')
 const connectDatabase = require('./src/configs/database.config');
 const { errorResponse } = require('./src/utils/response');
 const userRouter = require('./src/routers/user.router');
+const lessonRouter = require('./src/routers/lesson.router');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // router level middlewares
 app.use('/api/users', userRouter);
+app.use('/api/users/admin/lessons', lessonRouter);
 
 // home route
 app.get('/', (req, res) => {
