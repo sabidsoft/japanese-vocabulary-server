@@ -33,3 +33,8 @@ exports.updateLessonService = async (id, updateData) => {
     const updatedLesson = await Lesson.findByIdAndUpdate(id, updateData, { new: true });
     return updatedLesson;
 };
+
+exports.deleteLessonService = async (id) => {
+    const result = await Lesson.deleteOne({ _id: id });
+    return result;
+}

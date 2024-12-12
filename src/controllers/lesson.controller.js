@@ -3,7 +3,8 @@ const {
     getLessonsService,
     getLessonsWithVocabularyCountService,
     updateLessonService,
-    getLessonById
+    getLessonById,
+    deleteLessonService
 } = require("../services/lesson.service");
 const createError = require("http-errors");
 
@@ -102,6 +103,37 @@ exports.updateLesson = async (req, res, next) => {
             status: 200,
             message: "Lesson updated successfully!",
             payload: { updatedLesson },
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.deleteLesson = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        // Validate id
+        if (!id) throw createError(400, "ID is required!");
+
+        // Check if lesson exists
+        const lesson = await getLessonById(id);
+        if (!lesson) throw createError(400, "Lesson not found!");
+
+        // Check if lesson has linked vocabularies
+        const vocabCount = await Vocabulary.countDocuments({ lessonNumber: lesson.lessonNumber });
+        if (vocabCount > 0) {
+            throw createError(400, "Cannot delete lesson with linked vocabularies!");
+        }
+
+        // Delete the lesson
+        const result = await deleteLessonService(id);
+
+        // Send successful response
+        successResponse(res, {
+            status: 200,
+            message: "Lesson deleted successfully!",
+            payload: { result },
         });
     } catch (err) {
         next(err);
