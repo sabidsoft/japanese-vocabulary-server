@@ -1,4 +1,10 @@
-const { createLessonService, getLessonsService } = require("../services/lesson.service");
+const {
+    createLessonService,
+    getLessonsService,
+    getLessonsWithVocabularyCountService,
+    updateLessonService,
+    getLessonById
+} = require("../services/lesson.service");
 const createError = require("http-errors");
 
 exports.createLesson = async (req, res, next) => {
@@ -56,6 +62,46 @@ exports.getLessonsWithVocabularyCount = async (req, res, next) => {
             status: 200,
             message: "Lessons fetched successfully!",
             payload: { lessonsWithCounts },
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.updateLesson = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { lessonName, lessonNumber } = req.body;
+
+        // Validate id
+        if (!id)
+            throw createError(400, "ID is required!");
+
+        const isLessonExist = await getLessonById(id);
+        if (!isLessonExist)
+            throw createError(400, "Lesson not found!");
+
+        // Validate lesson name
+        if (!lessonName)
+            throw createError(400, "Lesson name is required!");
+
+        if (lessonName.length < 3)
+            throw createError(400, "Lesson name must be at least 3 characters long!");
+
+        // Validate lesson number
+        if (!lessonNumber)
+            throw createError(400, "Lesson number is required!");
+
+        if (typeof lessonNumber !== 'number' || lessonNumber <= 0)
+            throw createError(400, "Lesson number must be a positive number!");
+
+        const updatedLesson = await updateLessonService(id, { lessonName, lessonNumber });
+
+        // Send successful response
+        successResponse(res, {
+            status: 200,
+            message: "Lesson updated successfully!",
+            payload: { updatedLesson },
         });
     } catch (err) {
         next(err);

@@ -6,6 +6,12 @@ exports.createLessonService = async (data) => {
     return lesson;
 }
 
+exports.getLessonById = async (lessonId) => {
+    const lesson = await Lesson.findOne({ _id: lessonId });
+    return lesson;
+}
+
+
 exports.getLessonsService = async () => {
     const lessons = await Lesson.find({});
     return lessons;
@@ -21,4 +27,9 @@ exports.getLessonsWithVocabularyCountService = async () => {
         })
     );
     return lessonsWithCounts;
+};
+
+exports.updateLessonService = async (id, updateData) => {
+    const updatedLesson = await Lesson.findByIdAndUpdate(id, updateData, { new: true });
+    return updatedLesson;
 };

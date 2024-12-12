@@ -1,9 +1,16 @@
 const router = require("express").Router();
-const { createLesson, getLessonsWithVocabularyCount, getLessons } = require("../controllers/lesson.controller");
 const verifyToken = require("../middlewares/verifyToken");
+const {
+    createLesson,
+    getLessonsWithVocabularyCount,
+    getLessons,
+    updateLesson
+} = require("../controllers/lesson.controller");
 
-router.post("/", verifyToken, createLesson);
 router.get("/user-lessons", verifyToken, getLessons);
 router.get("/admin-lessons", verifyToken, getLessonsWithVocabularyCount);
+
+router.post("/", verifyToken, createLesson);
+router.put("/:id", verifyToken, updateLesson);
 
 module.exports = router;
