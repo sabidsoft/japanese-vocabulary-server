@@ -9,6 +9,7 @@ const connectDatabase = require('./src/configs/database.config');
 const { errorResponse } = require('./src/utils/response');
 const userRouter = require('./src/routers/user.router');
 const lessonRouter = require('./src/routers/lesson.router');
+const vocabularyRouter = require('./src/routers/vocabulary.router');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -23,6 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 // router level middlewares
 app.use('/api/users', userRouter);
 app.use('/api/lessons', lessonRouter);
+app.use('/api/vocabularies', vocabularyRouter);
 
 // home route
 app.get('/', (req, res) => {

@@ -1,3 +1,6 @@
+const createError = require("http-errors");
+const { successResponse } = require("../utils/response");
+const Lesson = require("../models/Lesson");
 const {
     createLessonService,
     getLessonsService,
@@ -6,7 +9,6 @@ const {
     getLessonById,
     deleteLessonService
 } = require("../services/lesson.service");
-const createError = require("http-errors");
 
 exports.createLesson = async (req, res, next) => {
     try {
@@ -26,9 +28,22 @@ exports.createLesson = async (req, res, next) => {
         if (typeof lessonNumber !== 'number' || lessonNumber <= 0)
             throw createError(400, "Lesson number must be a positive number!");
 
+        // Check for duplicate lesson name
+        const existingLessonByName = await Lesson.findOne({ lessonName });
+        if (existingLessonByName) {
+            throw createError(400, "Lesson name already exists!");
+        }
+
+        // Check for duplicate lesson number
+        const existingLessonByNumber = await Lesson.findOne({ lessonNumber });
+        if (existingLessonByNumber) {
+            throw createError(400, "Lesson number already exists!");
+        }
+
+        // Create the lesson
         const lesson = await createLessonService({ lessonName, lessonNumber });
 
-        // Send successfull response
+        // Send successful response
         successResponse(res, {
             status: 200,
             message: "Lesson created successfully!",
@@ -38,6 +53,7 @@ exports.createLesson = async (req, res, next) => {
         next(err);
     }
 };
+
 
 exports.getLessons = async (req, res, next) => {
     try {
@@ -75,26 +91,12 @@ exports.updateLesson = async (req, res, next) => {
         const { lessonName, lessonNumber } = req.body;
 
         // Validate id
-        if (!id)
-            throw createError(400, "ID is required!");
+        if (!id) throw createError(400, "ID is required!");
 
+        // checking lesson exist or not
         const isLessonExist = await getLessonById(id);
         if (!isLessonExist)
             throw createError(400, "Lesson not found!");
-
-        // Validate lesson name
-        if (!lessonName)
-            throw createError(400, "Lesson name is required!");
-
-        if (lessonName.length < 3)
-            throw createError(400, "Lesson name must be at least 3 characters long!");
-
-        // Validate lesson number
-        if (!lessonNumber)
-            throw createError(400, "Lesson number is required!");
-
-        if (typeof lessonNumber !== 'number' || lessonNumber <= 0)
-            throw createError(400, "Lesson number must be a positive number!");
 
         const updatedLesson = await updateLessonService(id, { lessonName, lessonNumber });
 
@@ -119,12 +121,6 @@ exports.deleteLesson = async (req, res, next) => {
         // Check if lesson exists
         const lesson = await getLessonById(id);
         if (!lesson) throw createError(400, "Lesson not found!");
-
-        // Check if lesson has linked vocabularies
-        const vocabCount = await Vocabulary.countDocuments({ lessonNumber: lesson.lessonNumber });
-        if (vocabCount > 0) {
-            throw createError(400, "Cannot delete lesson with linked vocabularies!");
-        }
 
         // Delete the lesson
         const result = await deleteLessonService(id);

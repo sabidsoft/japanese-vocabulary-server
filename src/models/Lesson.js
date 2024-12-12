@@ -4,6 +4,7 @@ const lessonSchema = new Schema({
     lessonName: {
         type: String,
         required: true,
+        unique: true,
         trim: true
     },
 
