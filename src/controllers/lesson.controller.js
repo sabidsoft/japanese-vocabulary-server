@@ -6,7 +6,8 @@ const {
     updateLessonService,
     getLessonById,
     deleteLessonService,
-    getLessonsService
+    getLessonsService,
+    getLessonsWithVocabularyCountService
 } = require("../services/lesson.service");
 
 exports.createLesson = async (req, res, next) => {
@@ -21,9 +22,6 @@ exports.createLesson = async (req, res, next) => {
             throw createError(400, "Lesson name must be at least 3 characters long!");
 
         // Validate lesson number
-        if (!lessonNumber)
-            throw createError(400, "Lesson number is required!");
-
         if (typeof lessonNumber !== 'number' || lessonNumber <= 0)
             throw createError(400, "Lesson number must be a positive number!");
 
@@ -39,7 +37,7 @@ exports.createLesson = async (req, res, next) => {
             throw createError(400, "Lesson number already exists!");
         }
 
-        // Create the lesson
+        // Create new lesson
         const lesson = await createLessonService({ lessonName, lessonNumber });
 
         // Send successful response
@@ -68,20 +66,45 @@ exports.getLessons = async (req, res, next) => {
     }
 };
 
+exports.getLessonsWithVocabularyCount = async (req, res, next) => {
+    try {
+        const lessons = await getLessonsWithVocabularyCountService();
+
+        // Send successfull response
+        successResponse(res, {
+            status: 200,
+            message: "Lessons fetched successfully!",
+            payload: { lessons },
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 exports.updateLesson = async (req, res, next) => {
     try {
-        const { id } = req.params;
-        const { lessonName, lessonNumber } = req.body;
+        const { _id, lessonName, lessonNumber } = req.body;
+
+        // Validate lesson name
+        if (!lessonName)
+            throw createError(400, "Lesson name is required!");
+
+        if (lessonName.length < 3)
+            throw createError(400, "Lesson name must be at least 3 characters long!");
+
+        // Validate lesson number
+        if (typeof lessonNumber !== 'number' || lessonNumber <= 0)
+            throw createError(400, "Lesson number must be a positive number!");
 
         // Validate id
-        if (!id) throw createError(400, "ID is required!");
+        if (!_id) throw createError(400, "ID is required!");
 
         // checking lesson exist or not
-        const isLessonExist = await getLessonById(id);
+        const isLessonExist = await getLessonById(_id);
         if (!isLessonExist)
             throw createError(400, "Lesson not found!");
 
-        const updatedLesson = await updateLessonService(id, { lessonName, lessonNumber });
+        const updatedLesson = await updateLessonService(_id, { lessonName, lessonNumber });
 
         // Send successful response
         successResponse(res, {
