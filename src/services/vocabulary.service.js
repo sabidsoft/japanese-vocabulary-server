@@ -17,10 +17,9 @@ exports.getVocabulariesByLessonNumberService = async (lessonNumber) => {
 
 
 exports.getVocabulariesService = async () => {
-    const vocabularies = await Vocabulary.find({});
+    const vocabularies = await Vocabulary.find({}).sort({ createdAt: -1 }); // Sorting by descending order of `createdAt`
     return vocabularies;
-}
-
+};
 exports.updateVocabularyService = async (id, updateData) => {
     const updatedVocabulary = await Vocabulary.findByIdAndUpdate(id, updateData, { new: true });
     return updatedVocabulary;

@@ -91,7 +91,22 @@ exports.updateVocabulary = async (req, res, next) => {
     try {
         const { _id, word, pronunciation, meaning, whenToSay, lessonNumber } = req.body;
 
-        console.log(req.body)
+        // Validate word
+        if (!word) throw createError(400, "Word is required!");
+
+        // Validate pronunciation
+        if (!pronunciation) throw createError(400, "Pronunciation is required!");
+
+        // Validate meaning
+        if (!meaning) throw createError(400, "Meaning is required!");
+
+        // Validate when to say
+        if (!whenToSay) throw createError(400, "When to say is required!");
+
+        // Validate lesson number
+        if (lessonNumber === 0) throw createError(400, "Lesson number can't be zero!");
+        if (typeof lessonNumber !== 'number' || lessonNumber <= 0)
+            throw createError(400, "Lesson number must be a positive number!");
 
         // Validate id
         if (!_id) throw createError(400, "ID is required!");
