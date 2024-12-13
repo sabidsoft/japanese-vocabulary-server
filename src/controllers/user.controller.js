@@ -1,5 +1,5 @@
 const createError = require("http-errors");
-const { getUserByEmail, createNewUser } = require("../services/user.service");
+const { getUserByEmail, createNewUser, getUsersService, getUserById } = require("../services/user.service");
 const { generateToken } = require("../utils/generateToken");
 const { successResponse } = require("../utils/response");
 const cloudinary = require("../utils/cloudinary");
@@ -119,6 +119,52 @@ exports.login = async (req, res, next) => {
         });
     } catch (err) {
         // Pass errors to the error handling middleware
+        next(err);
+    }
+};
+
+exports.getUsers = async (req, res, next) => {
+    try {
+        const users = await getUsersService();
+
+        // Send successful response
+        successResponse(res, {
+            status: 200,
+            message: "Users fetched successfully!",
+            payload: { users },
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.updateUserRole = async (req, res, next) => {
+    try {
+        const { userId } = req.params;
+        const { role } = req.body;
+
+        if (!userId)
+            throw createError(400, "User ID is required!");
+
+        if (!role)
+            throw createError(400, "Role is required!");
+
+        const user = await getUserById(userId);
+
+        if (!user)
+            throw createError(400, "User not found!");
+
+        // Update the user's role
+        user.role = role;
+        await user.save();
+
+        // Send successful response
+        successResponse(res, {
+            status: 200,
+            message: "User role updated successfully!",
+            payload: { user },
+        });
+    } catch (err) {
         next(err);
     }
 };

@@ -11,7 +11,7 @@ const {
 router.get("/", verifyToken, getVocabularies);
 router.get("/:lessonNumber", verifyToken, getVocabulariesByLessonNumber);
 router.post("/", verifyToken, createVocabulary);
-router.put("/:id", verifyToken, updateVocabulary);
+router.put("/", verifyToken, updateVocabulary);
 router.delete("/:id", verifyToken, deleteVocabulary);
 
 module.exports = router;

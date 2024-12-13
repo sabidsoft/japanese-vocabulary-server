@@ -12,7 +12,9 @@ const {
 
 exports.createVocabulary = async (req, res, next) => {
     try {
-        const { word, pronunciation, meaning, whenToSay, lessonNumber, adminEmail } = req.body;
+        const { word, pronunciation, meaning, whenToSay, adminEmail } = req.body;
+
+        const lessonNumber = parseInt(req.body.lessonNumber);
 
         // Validate word
         if (!word) throw createError(400, "Word is required!");
@@ -27,7 +29,7 @@ exports.createVocabulary = async (req, res, next) => {
         if (!whenToSay) throw createError(400, "When to say is required!");
 
         // Validate lesson number
-        if (!lessonNumber) throw createError(400, "Lesson number is required!");
+        if (lessonNumber === 0) throw createError(400, "Lesson number can't be zero!");
         if (typeof lessonNumber !== 'number' || lessonNumber <= 0)
             throw createError(400, "Lesson number must be a positive number!");
 
@@ -87,18 +89,19 @@ exports.getVocabulariesByLessonNumber = async (req, res, next) => {
 
 exports.updateVocabulary = async (req, res, next) => {
     try {
-        const { id } = req.params;
-        const { word, pronunciation, meaning, whenToSay, lessonNumber } = req.body;
+        const { _id, word, pronunciation, meaning, whenToSay, lessonNumber } = req.body;
+
+        console.log(req.body)
 
         // Validate id
-        if (!id) throw createError(400, "ID is required!");
+        if (!_id) throw createError(400, "ID is required!");
 
         // checking vocabulary exist or not
-        const isVocabularyExist = await getVocabularyById(id);
+        const isVocabularyExist = await getVocabularyById(_id);
         if (!isVocabularyExist)
             throw createError(400, "Vocabulary not found!");
 
-        const updatedVocabulary = await updateVocabularyService(id, { word, pronunciation, meaning, whenToSay, lessonNumber });
+        const updatedVocabulary = await updateVocabularyService(_id, { word, pronunciation, meaning, whenToSay, lessonNumber });
 
         // Send successful response
         successResponse(res, {
